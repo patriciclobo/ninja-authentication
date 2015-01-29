@@ -1,3 +1,6 @@
+script:
+  - jdk_switcher use oraclejdk8
+
 language: java
 script: "mvn clean test -Dninja.mode=test -Dgpg.skip=true"
 notifications:
