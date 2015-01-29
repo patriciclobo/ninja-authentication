@@ -9,4 +9,16 @@ If this software is useful to you, you can support further development by using 
 
 Authentication module for Ninja framework
 =====================
-This is an easly plugable module for the Ninja web framework to enable authentication services
+This is an easly plugable module for the Ninja web framework to enable authentication services.
+
+Requirements
+------------------
+
+- [Java SDK 1.8+][1]
+
+Usage
+-----
+
+tbd
+
+[1]: http://www.oracle.com/technetwork/java/javase/downloads/index.html
