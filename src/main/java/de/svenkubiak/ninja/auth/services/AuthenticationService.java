@@ -61,7 +61,7 @@ public class AuthenticationService {
      * @param context The current context
      * @param username The username to check
      * 
-     * @return True if the user is authenticated, false otherweise
+     * @return True if the user is authenticated, false otherwise
      */
     public boolean isAuthenticated(Context context, String username) {
         Preconditions.checkNotNull(context, "Valid context is required to check if a given username is authenticated");
