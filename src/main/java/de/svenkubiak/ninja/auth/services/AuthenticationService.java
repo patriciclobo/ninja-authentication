@@ -25,6 +25,8 @@ import de.svenkubiak.ninja.auth.enums.Key;
  *
  */
 public class AuthenticationService {
+    private static final int MAX_LENGTH = 512;
+
     private static final Logger LOG = LoggerFactory.getLogger(AuthenticationService.class);
     
     @Inject
@@ -56,13 +58,13 @@ public class AuthenticationService {
     public void logout(Context context) {
         Preconditions.checkNotNull(context, "Valid context is required");
         
-        Cookie.builder(context.getCookie(Key.AUTH_COOKIE_NAME.value())).setMaxAge(0);
+        Cookie.builder(context.getCookie(Key.AUTH_COOKIE_NAME.getValue())).setMaxAge(0);
         context.getSession().clear();
     }
     
     public String getSalt() {
         SecureRandom secureRandom;
-        byte[] bytes = new byte[512];
+        byte[] bytes = new byte[MAX_LENGTH];
         try {
             secureRandom = SecureRandom.getInstance("SHA1PRNG");
             secureRandom.nextBytes(bytes); 
@@ -74,17 +76,17 @@ public class AuthenticationService {
     }
     
     public void login(Context context, String username, boolean remember) {
-        Preconditions.checkNotNull(context, "Valid context is required");
+        Preconditions.checkNotNull(context, "Valid context is required for login");
         Preconditions.checkNotNull(username, "Username is required for login");
         
-        context.getSession().put(Key.AUTHENTICATED_USER.value(), username);
+        context.getSession().put(Key.AUTHENTICATED_USER.getValue(), username);
         if (remember) {
             setCookie(username);
         }
     }
     
     private void setCookie(String username) {
-        Cookie.builder(ninjaProperties.get(Key.AUTH_COOKIE_NAME.value()), getSignature(username))
+        Cookie.builder(ninjaProperties.get(Key.AUTH_COOKIE_NAME.getValue()), getSignature(username))
             .setSecure(true)
             .setHttpOnly(true)
             .build();
@@ -93,13 +95,13 @@ public class AuthenticationService {
     private String getSignature(String username) {
         Preconditions.checkNotNull(username, "Username is required for creating signature");
         
-        return DigestUtils.sha512Hex(username + ninjaProperties.get(Key.APPLICATION_SECRET.value()));
+        return DigestUtils.sha512Hex(username + ninjaProperties.get(Key.APPLICATION_SECRET.getValue()));
     }
     
     private String getUsernameFromCookie(Context context) {
-        Preconditions.checkNotNull(context, "Valid context is required");
+        Preconditions.checkNotNull(context, "Valid context is required for getting username from Cookie");
         
-        Cookie cookie = context.getCookie(ninjaProperties.get(Key.AUTH_COOKIE_NAME.value()));
+        Cookie cookie = context.getCookie(ninjaProperties.get(Key.AUTH_COOKIE_NAME.getValue()));
         if (cookie != null && StringUtils.isNotBlank(cookie.getValue()) && cookie.getValue().indexOf("-") > 0) {
             final String sign = cookie.getValue().substring(0, cookie.getValue().indexOf("-"));
             final String username = cookie.getValue().substring(cookie.getValue().indexOf("-") + 1);
@@ -113,10 +115,10 @@ public class AuthenticationService {
     }
     
     private String getUsernameFromSession(Context context) {
-        Preconditions.checkNotNull(context, "Valid context is required");
+        Preconditions.checkNotNull(context, "Valid context is required for getting username from session");
         
         if (context.getSession() != null) {
-            return context.getSession().get(Key.AUTHENTICATED_USER.value());
+            return context.getSession().get(Key.AUTHENTICATED_USER.getValue());
         }
         
         return null;
