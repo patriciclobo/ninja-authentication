@@ -7,6 +7,7 @@
 	<packaging>jar</packaging>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<ninja.version>4.0.4</ninja.version>
 	</properties>
 	<name>Ninja Framework Authentication Module</name>
 	<description>This is an easly plugable module for the Ninja web framework to enable authentication services.</description>
@@ -25,13 +26,13 @@
 	</developers>
 	<scm>
 		<connection>scm:git:git@github.com:svenkubiak/ninja-authentication.git</connection>
-		<developerConnection>scm:git:git@github.com:svenkubiak/ninja-authenticationb.git</developerConnection>
+		<developerConnection>scm:git:git@github.com:svenkubiak/ninja-authentication.git</developerConnection>
 		<url>git@github.com:svenkubiak/ninja-authentication.git</url>
 		<tag>HEAD</tag>
 	</scm>
 	<prerequisites>
 		<maven>3.1.0</maven>
-	</prerequisites>	
+	</prerequisites>
 	<build>
 		<plugins>
 			<plugin>
@@ -62,7 +63,7 @@
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>sonar-maven-plugin</artifactId>
 				<version>2.5</version>
-			</plugin>			
+			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-javadoc-plugin</artifactId>
@@ -91,13 +92,25 @@
 				<version>2.1</version>
 			</plugin>
 		</plugins>
-	</build>	
+	</build>
 	<dependencies>
 		<dependency>
 			<groupId>org.ninjaframework</groupId>
 			<artifactId>ninja-core</artifactId>
-			<version>4.0.4</version>
+			<version>${ninja.version}</version>
 			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.ninjaframework</groupId>
+			<artifactId>ninja-test-utilities</artifactId>
+			<version>${ninja.version}</version>
+			<scope>test</scope>
+		</dependency>		
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.12</version>
+			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>com.google.guava</groupId>
@@ -105,7 +118,7 @@
 			<version>18.0</version>
 		</dependency>
 	</dependencies>
-		<distributionManagement>
+	<distributionManagement>
 		<snapshotRepository>
 			<id>ossrh</id>
 			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
