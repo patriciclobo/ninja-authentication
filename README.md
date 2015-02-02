@@ -45,7 +45,7 @@ The Authentications class offers convenient functions to perform authentication.
 
 Check the JavaDoc for a detailed explanation of the methods.
 
-If your are want to keep the user logged in, even if the browser is closed, you might want to set the name of the cookie with the following option in your application.conf
+If you want to keep the user logged in, even if the browser is closed, you might want to set the name of the cookie with the following option in your application.conf
 
 	auth.cookie.name=mycookiename
 
