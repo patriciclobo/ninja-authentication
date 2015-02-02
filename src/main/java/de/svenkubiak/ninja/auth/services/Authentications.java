@@ -77,7 +77,7 @@ public class Authentications {
      * Checks a clear text password against a previously hashed BCrypt one
      * 
      * @param password The cleartext password
-     * @param hashed The with {@link #getHashedPassword(password) getHashedPassword} created hash value
+     * @param hashed The with {@link #getHashedPassword(String)} created hash value
      * 
      * @return True if the password matches, false otherwise
      */
