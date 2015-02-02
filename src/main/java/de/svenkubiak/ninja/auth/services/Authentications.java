@@ -144,7 +144,7 @@ public class Authentications {
      * @param username The username to create the cookie
      */
     private void setCookie(String username) {
-        Cookie.builder(ninjaProperties.get(Key.AUTH_COOKIE_NAME.getValue()), getSignature(username))
+        Cookie.builder(ninjaProperties.getWithDefault(Key.AUTH_COOKIE_NAME.getValue(), Key.DEFAULT_AUTH_COOKIE_NAME.getValue()), getSignature(username))
             .setSecure(true)
             .setHttpOnly(true)
             .build();
@@ -173,7 +173,7 @@ public class Authentications {
     private String getUsernameFromCookie(Context context) {
         Preconditions.checkNotNull(context, "Valid context is required for getting username from Cookie");
         
-        Cookie cookie = context.getCookie(ninjaProperties.get(Key.AUTH_COOKIE_NAME.getValue()));
+        Cookie cookie = context.getCookie(ninjaProperties.getWithDefault(Key.AUTH_COOKIE_NAME.getValue(), Key.DEFAULT_AUTH_COOKIE_NAME.getValue()));
         if (cookie != null && StringUtils.isNotBlank(cookie.getValue()) && cookie.getValue().indexOf("-") > 0) {
             final String sign = cookie.getValue().substring(0, cookie.getValue().indexOf("-"));
             final String username = cookie.getValue().substring(cookie.getValue().indexOf("-") + 1);
