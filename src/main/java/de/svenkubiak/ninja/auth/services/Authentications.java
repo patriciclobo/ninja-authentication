@@ -96,7 +96,9 @@ public class Authentications {
     public void logout(Context context) {
         Preconditions.checkNotNull(context, "Valid context is required");
         
-        Cookie.builder(context.getCookie(Key.AUTH_COOKIE_NAME.getValue())).setMaxAge(0);
+        Cookie.builder(context.getCookie(ninjaProperties.getWithDefault(Key.AUTH_COOKIE_NAME.getValue(), Key.DEFAULT_AUTH_COOKIE_NAME.getValue())))
+                .setMaxAge(0);
+        
         context.getSession().clear();
     }
     
