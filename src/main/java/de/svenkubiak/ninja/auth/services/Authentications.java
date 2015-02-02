@@ -22,7 +22,7 @@ import de.svenkubiak.ninja.auth.enums.Key;
  */
 public class Authentications {
     private static final Logger LOG = LoggerFactory.getLogger(Authentications.class); 
-    private static final int ROUNDS = 12;
+    private static final int LOG_ROUNDS = 12;
     
     @Inject
     private NinjaProperties ninjaProperties;
@@ -74,26 +74,28 @@ public class Authentications {
      * @return The hashed value 
      */
     public String getHashedPassword(String password) {
-        return BCrypt.hashpw(password, BCrypt.gensalt(ROUNDS));
+        Preconditions.checkNotNull(password, "Password is required for getHashedPassword");
+        
+        return BCrypt.hashpw(password, BCrypt.gensalt(LOG_ROUNDS));
     }
     
     /**
      * Checks a clear text password against a previously hashed BCrypt one
      * 
      * @param password The cleartext password
-     * @param hashed The with {@link #getHashedPassword(String)} created hash value
+     * @param hash The with {@link #getHashedPassword(String)} created hash value
      * 
      * @return True if the password matches, false otherwise
      */
-    public boolean authenticate(String password, String hashed) {
+    public boolean authenticate(String password, String hash) {
         Preconditions.checkNotNull(password, "Password is required for authenticate");
         Preconditions.checkNotNull(password, "Hashed password is required for authenticate");
         
         boolean authenticated = false;
         try {
-            authenticated = BCrypt.checkpw(password, hashed);
+            authenticated = BCrypt.checkpw(password, hash);
         } catch (IllegalArgumentException e) {
-            LOG.error("Failed to check password", e);
+            LOG.error("Failed to check password against hash", e);
         }
         
         return authenticated;

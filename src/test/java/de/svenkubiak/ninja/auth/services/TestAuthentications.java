@@ -55,7 +55,7 @@ public class TestAuthentications extends NinjaTest {
         assertTrue(authentications.authenticate(password, hash));
     }
     
-    @Test(expected=IllegalArgumentException.class)
+    @Test
     public void testInValidCheckpassword() {
         String password = "123password";
         assertFalse(authentications.authenticate(password, "foo"));
