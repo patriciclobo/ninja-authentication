@@ -31,6 +31,10 @@ The AuthenticationFilter is responsible for checking if a user is logged in. It 
 	
 If this property is not configured, the filter will return a 403 forbidden.
 
+To use the AuthenticationFilter to protect authentication required pages, you have to annotate your controller or method with the following annotation:
+
+	@FilterWith(AuthenticationFilter.class)
+
 *Authentications*
 
 The Authentications class offers convenient functions to perform authentication. The main methods are
