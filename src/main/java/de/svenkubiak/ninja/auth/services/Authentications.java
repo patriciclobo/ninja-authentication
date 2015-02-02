@@ -1,18 +1,12 @@
 package de.svenkubiak.ninja.auth.services;
 
-import java.security.NoSuchAlgorithmException;
-import java.security.SecureRandom;
-import java.util.UUID;
-
 import ninja.Context;
 import ninja.Cookie;
 import ninja.utils.NinjaProperties;
 
-import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.mindrot.jbcrypt.BCrypt;
 
 import com.google.common.base.Preconditions;
 import com.google.inject.Inject;
@@ -25,9 +19,7 @@ import de.svenkubiak.ninja.auth.enums.Key;
  *
  */
 public class Authentications {
-    private static final Logger LOG = LoggerFactory.getLogger(Authentications.class);
-    private static final int MAX_LENGTH = 128;
-    
+
     @Inject
     private NinjaProperties ninjaProperties;
     
@@ -71,18 +63,30 @@ public class Authentications {
     }
     
     /**
-     * Generates a SHA512 hash value for the given password and salt
+     * Generates a hash value for a given password using BCrypt
      * 
      * @param password The password to hash
      * @param salt The salt to use
      * 
      * @return The hashed value 
      */
-    public String getHashedPassword(String password, String salt) {
-        Preconditions.checkNotNull(password, "Password is required for hashing a password");
-        Preconditions.checkNotNull(salt, "Salt is required for hashing a password");
+    public String getHashedPassword(String password) {
+        return BCrypt.hashpw(password, BCrypt.gensalt(12));
+    }
+    
+    /**
+     * Checks a clear text password against a previously hashed BCrypt one
+     * 
+     * @param password The cleartext password
+     * @param hashed The with {@link #getHashedPassword(password) getHashedPassword} created hash value
+     * 
+     * @return True if the password matches, false otherwise
+     */
+    public boolean authenticate(String password, String hashed) {
+        Preconditions.checkNotNull(password, "Password is required for authentication");
+        Preconditions.checkNotNull(password, "Hashed password is required for authentication");
         
-        return DigestUtils.sha512Hex(password + salt);
+        return BCrypt.checkpw(password, hashed);
     }
     
     /**
@@ -95,24 +99,6 @@ public class Authentications {
         
         Cookie.builder(context.getCookie(Key.AUTH_COOKIE_NAME.getValue())).setMaxAge(0);
         context.getSession().clear();
-    }
-    
-    /**
-     * Convenient function for creating a SecureRandom based salt
-     * 
-     * @return The salt
-     */
-    public String getSalt() {
-        SecureRandom secureRandom;
-        byte[] bytes = new byte[MAX_LENGTH];
-        try {
-            secureRandom = SecureRandom.getInstance("SHA1PRNG");
-            secureRandom.nextBytes(bytes); 
-        } catch (NoSuchAlgorithmException e) {
-            LOG.error("Failed to generate salt", e);
-        }
-        
-        return (bytes == null) ? UUID.randomUUID().toString() : Base64.encodeBase64String(bytes);
     }
     
     /**

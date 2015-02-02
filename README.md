@@ -21,11 +21,15 @@ Usage
 
 **Please note: This module does not do the actual authentication (checking username and password against store values). It also does not provide any templates for login, registration, etc. It just makes handling authentications in the Ninja web framework a little easier.**
 
-The module mainly consists of two classes: AuthenticationFilter and Authentications.
+This module uses [BCrypt][2] provided by [jBCrypt][3] for password hashing, which means, that you don't have to store a salt along with the user. Just the hashed password. This also means, that you have to hash the user password with the following provided message and store this hash value with the user.
+
+	getHashedPassword(String password)
+
+When using this module, you basically use two classes: AuthenticationFilter and Authentications.
 
 *AuthenticationFilter*
 
-The AuthenticationFilter is responsible for checking if a user is logged in. It does this by checking if a username is stored in the current session or in a cookie. If no username is found in neither the session or the cookie it will redirect the current request to a predefined url in your application.conf
+The AuthenticationFilter is responsible for checking if a user is logged in. It does this by checking if a username is stored in the current session or in a cookie. If no username is found in either the session or the cookie it will redirect the current request to a predefined url in your application.conf
 
 	auth.redirect.url=/my/login/url
 	
@@ -39,14 +43,17 @@ To use the AuthenticationFilter to protect authentication required pages, you ha
 
 The Authentications class offers convenient functions to perform authentication. The main methods are
 
-	getAuthenticationedUser(Context context)
+	authenticate(String password, String hash)
 	login(Context context, String username, boolean remember)
+	getAuthenticatedUser(Context context)
 	logout(Context context)
 
 Check the JavaDoc for a detailed explanation of the methods.
 
-If you want to keep the user logged in, even if the browser is closed, you might want to set the name of the cookie with the following option in your application.conf
+You can set the name for the authentication cookie with the following option in your application.conf
 
 	auth.cookie.name=mycookiename
 
 [1]: http://www.oracle.com/technetwork/java/javase/downloads/index.html
+[2]: http://de.wikipedia.org/wiki/Bcrypt
+[3]: http://www.mindrot.org/projects/jBCrypt/
