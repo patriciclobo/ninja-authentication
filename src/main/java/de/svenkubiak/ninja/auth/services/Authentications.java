@@ -24,8 +24,8 @@ import de.svenkubiak.ninja.auth.enums.Key;
  * @author svenkubiak
  *
  */
-public class AuthenticationService {
-    private static final Logger LOG = LoggerFactory.getLogger(AuthenticationService.class);
+public class Authentications {
+    private static final Logger LOG = LoggerFactory.getLogger(Authentications.class);
     private static final int MAX_LENGTH = 128;
     
     @Inject
@@ -37,7 +37,7 @@ public class AuthenticationService {
      * 
      * @param context The current context
      * 
-     * @return The username of the authenticated user
+     * @return The username of the authenticated user or null if none is found
      */
     public String getAuthenticatedUser(Context context) {
         Preconditions.checkNotNull(context, "Valid context is required");
@@ -56,7 +56,7 @@ public class AuthenticationService {
     }
 
     /**
-     * Convenient function to check if a given user is authenticated.
+     * Convenient function to check if a given username is authenticated
      * 
      * @param context The current context
      * @param username The username to check
@@ -71,7 +71,7 @@ public class AuthenticationService {
     }
     
     /**
-     * Generates a SHA2(SHA512) hash value for the given password and salt
+     * Generates a SHA512 hash value for the given password and salt
      * 
      * @param password The password to hash
      * @param salt The salt to use
@@ -86,7 +86,7 @@ public class AuthenticationService {
     }
     
     /**
-     * Performs a logout in the current context, remove the user session and cookie.
+     * Performs a logout in the current context, remove the user session and cookie
      * 
      * @param context The current context
      */
@@ -118,11 +118,13 @@ public class AuthenticationService {
     /**
      * Performs a login by putting the username in the current conext sesssion. If remember
      * is passed as true, a cookie will be store as well for keeping the user logged in
-     * even if the browser is closed.
+     * if the browser is closed.
+     * 
+     * IMPORTANT: Only call this method if you are certain that the user is authenticated!
      * 
      * @param context The current context
      * @param username The username to login
-     * @param remember True if the username should stay login after the browser is close, false otherwise
+     * @param remember True if the username should stay login after the browser is closed
      */
     public void login(Context context, String username, boolean remember) {
         Preconditions.checkNotNull(context, "Valid context is required for login");
@@ -135,8 +137,9 @@ public class AuthenticationService {
     }
     
     /**
-     * Creates a cookie storing the cleartext and signed username. This function is used, when
-     * the user wants to stay logged in, even if the browser is close.
+     * Creates a cookie storing the username as cleartext and as a hased value.
+     * This function is used, when the user wants to stay logged in, even if the
+     * browser is closed.
      * 
      * @param username The username to create the cookie
      */
@@ -148,7 +151,7 @@ public class AuthenticationService {
     }
     
     /**
-     * Creates a signature for for a given username by hashin it with the ninja
+     * Creates a signature for a given username by hashing it with the ninja
      * application secret
      * 
      * @param username The username to create the signature

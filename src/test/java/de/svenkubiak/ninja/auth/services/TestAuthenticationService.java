@@ -24,12 +24,12 @@ import de.svenkubiak.ninja.auth.enums.Key;
 public class TestAuthenticationService extends NinjaTest {
     private static final String USERNAME = "username";
     private static final String HASHED_PASSWORD = "80a9ecbc2909b95f71f8696b9c4d6e66b7015fa716bf30a19b3f83de20f5fea9a4925e35d48644affd703b115ff465b52ba50434464e7eaaaae7f38937c7ee51";
-    private AuthenticationService authenticationService;
+    private Authentications authenticationService;
     private Context context = Mockito.mock(Context.class);
     
     @Before
     public void init() {
-        authenticationService = getInjector().getInstance(AuthenticationService.class);
+        authenticationService = getInjector().getInstance(Authentications.class);
         Session session = getInjector().getInstance(Session.class);
         
         Cookie cookie = Cookie.builder("testcookie", "foo")

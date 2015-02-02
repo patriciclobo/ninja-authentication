@@ -12,7 +12,7 @@ import org.apache.commons.lang3.StringUtils;
 import com.google.inject.Inject;
 
 import de.svenkubiak.ninja.auth.enums.Key;
-import de.svenkubiak.ninja.auth.services.AuthenticationService;
+import de.svenkubiak.ninja.auth.services.Authentications;
 
 /**
  * 
@@ -25,7 +25,7 @@ public class AuthenticationFilter implements Filter {
     private NinjaProperties ninjaProperties;
     
     @Inject
-    private AuthenticationService authenticationService;
+    private Authentications authenticationService;
     
     @Override
     public Result filter(FilterChain filterChain, Context context) {
