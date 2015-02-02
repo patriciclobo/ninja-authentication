@@ -19,7 +19,8 @@ import de.svenkubiak.ninja.auth.enums.Key;
  *
  */
 public class Authentications {
-
+    private static final int ROUNDS = 12;
+    
     @Inject
     private NinjaProperties ninjaProperties;
     
@@ -32,7 +33,7 @@ public class Authentications {
      * @return The username of the authenticated user or null if none is found
      */
     public String getAuthenticatedUser(Context context) {
-        Preconditions.checkNotNull(context, "Valid context is required");
+        Preconditions.checkNotNull(context, "Valid context is required for getAuthenticatedUser");
         
         String username = getUsernameFromSession(context);
         if (StringUtils.isNotBlank(username)) {
@@ -56,8 +57,8 @@ public class Authentications {
      * @return True if the user is authenticated, false otherwise
      */
     public boolean isAuthenticated(Context context, String username) {
-        Preconditions.checkNotNull(context, "Valid context is required to check if a given username is authenticated");
-        Preconditions.checkNotNull(username, "Username is required to check if a given username is authenticated");
+        Preconditions.checkNotNull(context, "Valid context is required for isAuthenticated");
+        Preconditions.checkNotNull(username, "Username is required for isAuthenticated");
         
         return username.equals(getAuthenticatedUser(context));
     }
@@ -70,7 +71,7 @@ public class Authentications {
      * @return The hashed value 
      */
     public String getHashedPassword(String password) {
-        return BCrypt.hashpw(password, BCrypt.gensalt(12));
+        return BCrypt.hashpw(password, BCrypt.gensalt(ROUNDS));
     }
     
     /**
@@ -82,8 +83,8 @@ public class Authentications {
      * @return True if the password matches, false otherwise
      */
     public boolean authenticate(String password, String hashed) {
-        Preconditions.checkNotNull(password, "Password is required for authentication");
-        Preconditions.checkNotNull(password, "Hashed password is required for authentication");
+        Preconditions.checkNotNull(password, "Password is required for authenticate");
+        Preconditions.checkNotNull(password, "Hashed password is required for authenticate");
         
         return BCrypt.checkpw(password, hashed);
     }
@@ -94,7 +95,7 @@ public class Authentications {
      * @param context The current context
      */
     public void logout(Context context) {
-        Preconditions.checkNotNull(context, "Valid context is required");
+        Preconditions.checkNotNull(context, "Valid context is required for logout");
         
         Cookie cookie = context.getCookie(ninjaProperties.getWithDefault(Key.AUTH_COOKIE_NAME.getValue(), Key.DEFAULT_AUTH_COOKIE_NAME.getValue()));
         if (cookie != null) {
@@ -133,6 +134,8 @@ public class Authentications {
      * @param username The username to create the cookie
      */
     private void setCookie(String username) {
+        Preconditions.checkNotNull(username, "Username is required for setCookie");
+        
         Cookie.builder(ninjaProperties.getWithDefault(Key.AUTH_COOKIE_NAME.getValue(), Key.DEFAULT_AUTH_COOKIE_NAME.getValue()), getSignature(username))
             .setSecure(true)
             .setHttpOnly(true)
@@ -148,7 +151,7 @@ public class Authentications {
      * @return The signature
      */
     private String getSignature(String username) {
-        Preconditions.checkNotNull(username, "Username is required for creating signature");
+        Preconditions.checkNotNull(username, "Username is required for getSignature");
         
         return DigestUtils.sha512Hex(username + ninjaProperties.get(Key.APPLICATION_SECRET.getValue()));
     }
@@ -160,7 +163,7 @@ public class Authentications {
      * @return The username or null if none is present
      */
     private String getUsernameFromCookie(Context context) {
-        Preconditions.checkNotNull(context, "Valid context is required for getting username from Cookie");
+        Preconditions.checkNotNull(context, "Valid context is required for getUsernameFromCookie");
         
         Cookie cookie = context.getCookie(ninjaProperties.getWithDefault(Key.AUTH_COOKIE_NAME.getValue(), Key.DEFAULT_AUTH_COOKIE_NAME.getValue()));
         if (cookie != null && StringUtils.isNotBlank(cookie.getValue()) && cookie.getValue().indexOf("-") > 0) {
@@ -182,7 +185,7 @@ public class Authentications {
      * @return The username or null if none is present
      */
     private String getUsernameFromSession(Context context) {
-        Preconditions.checkNotNull(context, "Valid context is required for getting username from session");
+        Preconditions.checkNotNull(context, "Valid context is required for getUsernameFromSession");
 
         return context.getSession().get(Key.AUTHENTICATED_USER.getValue());
     }
