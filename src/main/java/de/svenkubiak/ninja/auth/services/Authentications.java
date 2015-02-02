@@ -66,7 +66,6 @@ public class Authentications {
      * Generates a hash value for a given password using BCrypt
      * 
      * @param password The password to hash
-     * @param salt The salt to use
      * 
      * @return The hashed value 
      */
