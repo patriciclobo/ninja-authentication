@@ -19,7 +19,7 @@ Requires [Java SDK 1.8+][1]
 Usage
 -----
 
-**Please note: This module does not do the actual authentication (checking username and password against store values). It also does not provide any templates for login, registration, etc. It just makes handling authentications in the Ninja web framework a little easier.**
+**Please note: This module does not do the actual authentication (checking username and password against store values). You have to store these values yourself and pass them to the provided methods. It also does not provide any templates for login, registration, etc. It just makes handling authentications in the Ninja web framework a little easier.**
 
 This module uses [BCrypt][2] provided by [jBCrypt][3] for password hashing, which means, that you don't have to store a salt along with the user. Just the hashed password. This also means, that you have to hash the user password with the following provided message and store this hash value with the user.
 
