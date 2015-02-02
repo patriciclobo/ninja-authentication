@@ -52,15 +52,10 @@ public class AuthenticationFilter implements Filter {
                 context,
                 Optional.<Result>absent());
 
-        Message message = new Message(messageI18n); 
-           
-        Result result = Results
-                        .forbidden()
-                        .supportedContentTypes(Result.TEXT_HTML, Result.APPLICATION_JSON, Result.APPLICATION_XML)
-                        .fallbackContentType(Result.TEXT_HTML)
-                        .render(message)
-                        .template(NinjaConstant.LOCATION_VIEW_FTL_HTML_FORBIDDEN);
-        
-        return result;
+        return Results.forbidden()
+                      .supportedContentTypes(Result.TEXT_HTML, Result.APPLICATION_JSON, Result.APPLICATION_XML)
+                      .fallbackContentType(Result.TEXT_HTML)
+                      .render(new Message(messageI18n))
+                      .template(NinjaConstant.LOCATION_VIEW_FTL_HTML_FORBIDDEN);
     }
 }
