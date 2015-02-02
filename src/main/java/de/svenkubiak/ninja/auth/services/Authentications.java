@@ -7,6 +7,8 @@ import ninja.utils.NinjaProperties;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.mindrot.jbcrypt.BCrypt;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Preconditions;
 import com.google.inject.Inject;
@@ -19,6 +21,7 @@ import de.svenkubiak.ninja.auth.enums.Key;
  *
  */
 public class Authentications {
+    private static final Logger LOG = LoggerFactory.getLogger(Authentications.class); 
     private static final int ROUNDS = 12;
     
     @Inject
@@ -86,7 +89,14 @@ public class Authentications {
         Preconditions.checkNotNull(password, "Password is required for authenticate");
         Preconditions.checkNotNull(password, "Hashed password is required for authenticate");
         
-        return BCrypt.checkpw(password, hashed);
+        boolean authenticated = false;
+        try {
+            authenticated = BCrypt.checkpw(password, hashed);
+        } catch (IllegalArgumentException e) {
+            LOG.error("Failed to check password", e);
+        }
+        
+        return authenticated;
     }
     
     /**
