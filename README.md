@@ -12,11 +12,28 @@ Authentication module for Ninja framework
 This is an easly plugable module for the Ninja web framework to enable authentication services.
 
 Requirements
-------------------
+------------
 
-Requires [Java SDK 1.8+][1]
+- [Java SDK 1.8+][1]
+- [Ninja web framework 4.0.5+][4]
 
-Requires [Ninja framework 4.0.5+][4]
+Configuration
+-------------
+	auth.cookie.name=mycookiename
+
+The name of the cookie, when the user wants to stay logged in, even is the browser is closed.
+
+Default: application.cookie.prefix + ninja-authentication.
+
+	auth.cookie.expires=42000
+		
+The time in seconds how long the user stays logged in.
+
+Default: Two weeks
+
+	auth.login.redirect=/myloginpage
+
+The url the user will be redirected. If this is not configured, the module will return the default 401 unauthorized ninja template.
 
 Usage
 -----
@@ -33,10 +50,6 @@ When using this module, you basically use two classes: AuthenticationFilter and 
 
 The AuthenticationFilter is responsible for checking if a user is logged in. It does this by checking if a username is stored in the current session or in a cookie. If no username is found in either the session or the cookie it will redirect the current request to a predefined url in your application.conf
 
-	auth.redirect.url=/my/login/url
-	
-If this property is not configured, the filter will return a 401 unauthorized.
-
 To use the AuthenticationFilter to protect authentication required pages, you have to annotate your controller or method with the following annotation:
 
 	@FilterWith(AuthenticationFilter.class)
@@ -52,10 +65,6 @@ The Authentications class offers convenient functions to perform authentication.
 
 Check the JavaDoc for a detailed explanation of the methods.
 
-You can set the name for the authentication cookie with the following option in your application.conf
-
-	auth.cookie.name=mycookiename
-	
 *Checking Authentication*
 
 If you want to check if a user is logged in your template, you can use the following check
