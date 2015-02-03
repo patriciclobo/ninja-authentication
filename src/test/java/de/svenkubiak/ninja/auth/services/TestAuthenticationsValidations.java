@@ -22,21 +22,6 @@ public class TestAuthenticationsValidations extends NinjaTest {
     }
     
     @Test(expected=NullPointerException.class)
-    public void testIsAuthenticated() {
-        authentications.isAuthenticated(null, null);
-    }
-    
-    @Test(expected=NullPointerException.class)
-    public void testIsAuthenticated2() {
-        authentications.isAuthenticated(context, null);
-    }
-    
-    @Test(expected=NullPointerException.class)
-    public void testIsAuthenticated3() {
-        authentications.isAuthenticated(null, "foo");
-    }
-    
-    @Test(expected=NullPointerException.class)
     public void testGetHashedPassword() {
         authentications.getHashedPassword(null);
     }

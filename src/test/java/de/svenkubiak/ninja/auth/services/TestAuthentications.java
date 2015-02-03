@@ -37,7 +37,7 @@ public class TestAuthentications extends NinjaTest {
             .setHttpOnly(true).build();
         
         when(context.getSession()).thenReturn(session);
-        when(context.getCookie(Key.AUTH_COOKIE_NAME.getValue())).thenReturn(cookie);
+        when(context.getCookie(Key.AUTH_COOKIE_NAME.get())).thenReturn(cookie);
     }
     
     @Test

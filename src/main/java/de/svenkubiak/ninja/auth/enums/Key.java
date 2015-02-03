@@ -7,6 +7,7 @@ package de.svenkubiak.ninja.auth.enums;
  */
 public enum Key {
     AUTH_COOKIE_NAME("auth.cookie.name"),
+    AUTH_COOKIE_EXPIRES("auth.cookie.expires"),
     AUTH_REDIRECT_URL("auth.redirect.url"),
     APPLICATION_SECRET("application.secret"),
     AUTHENTICATED_USER("authenticateduser"),
@@ -18,7 +19,7 @@ public enum Key {
         this.value = value;
     }
 
-    public String getValue() {
+    public String get() {
         return this.value;
     }
 }

@@ -34,7 +34,7 @@ public class AuthenticationFilter implements Filter {
     @Override
     public Result filter(FilterChain filterChain, Context context) {
         if (StringUtils.isBlank(authentications.getAuthenticatedUser(context))) {
-            String redirect = ninjaProperties.get(Key.AUTH_REDIRECT_URL.getValue());
+            String redirect = ninjaProperties.get(Key.AUTH_REDIRECT_URL.get());
             return (StringUtils.isBlank(redirect)) ? ninjaDefault.getUnauthorizedResult(context) : Results.redirect(redirect);
         }
         

@@ -1,5 +1,7 @@
 package de.svenkubiak.ninja.auth.services;
 
+import java.util.Date;
+
 import ninja.Context;
 import ninja.Cookie;
 import ninja.utils.NinjaProperties;
@@ -24,6 +26,9 @@ import de.svenkubiak.ninja.auth.enums.Key;
 @Singleton
 public class Authentications {
     private static final Logger LOG = LoggerFactory.getLogger(Authentications.class); 
+    private static final String SEPARATOR = "##";
+    private static final int TWO_WEEKS_SECONDS = 1209600;
+    private static final int TWO_WEEKS_MILLISECONDS = 1209600000;
     private static final int LOG_ROUNDS = 12;
     
     @Inject
@@ -31,7 +36,9 @@ public class Authentications {
     
     /**
      * Retrieves the current authenticated user from the context. Lookup is
-     * first done via session, then via cookie.
+     * first done via session, then via cookie. If a user is not found in the
+     * session but in the cookie, the username will be added to the session
+     * for next lookup.
      * 
      * @param context The current context
      * 
@@ -47,25 +54,11 @@ public class Authentications {
         
         username = getUsernameFromCookie(context);
         if (StringUtils.isNotBlank(username)) {
+            context.getSession().put(Key.AUTHENTICATED_USER.get(), username);
             return username;
         }
         
         return null;
-    }
-
-    /**
-     * Convenient function to check if a given username is authenticated
-     * 
-     * @param context The current context
-     * @param username The username to check
-     * 
-     * @return True if the user is authenticated, false otherwise
-     */
-    public boolean isAuthenticated(Context context, String username) {
-        Preconditions.checkNotNull(context, "Valid context is required for isAuthenticated");
-        Preconditions.checkNotNull(username, "Username is required for isAuthenticated");
-        
-        return username.equals(getAuthenticatedUser(context));
     }
     
     /**
@@ -111,12 +104,22 @@ public class Authentications {
     public void logout(Context context) {
         Preconditions.checkNotNull(context, "Valid context is required for logout");
         
-        Cookie cookie = context.getCookie(ninjaProperties.getWithDefault(Key.AUTH_COOKIE_NAME.getValue(), Key.DEFAULT_AUTH_COOKIE_NAME.getValue()));
-        if (cookie != null) {
-            Cookie.builder(cookie).setMaxAge(0); 
+        //TODO use new unset cookie function context.unsetCookie(coookie)
+        if (context.hasCookie(getCookieName())) {
+            Cookie.builder(context.getCookie(getCookieName())).setMaxAge(0); 
         }
         
         context.getSession().clear();
+    }
+    
+    /**
+     * Return the name of the authentication cookie
+     * 
+     * @return Name of the authentication cookie
+     */
+    private String getCookieName() {
+        String prefix = ninjaProperties.get("application.cookie.prefix") + "-";
+        return prefix + ninjaProperties.getWithDefault(Key.AUTH_COOKIE_NAME.get(), Key.DEFAULT_AUTH_COOKIE_NAME.get());
     }
     
     /**
@@ -134,9 +137,9 @@ public class Authentications {
         Preconditions.checkNotNull(context, "Valid context is required for login");
         Preconditions.checkNotNull(username, "Username is required for login");
         
-        context.getSession().put(Key.AUTHENTICATED_USER.getValue(), username);
+        context.getSession().put(Key.AUTHENTICATED_USER.get(), username);
         if (remember) {
-            setCookie(username);
+            setCookie(username, context);
         }
     }
     
@@ -147,13 +150,25 @@ public class Authentications {
      * 
      * @param username The username to create the cookie
      */
-    private void setCookie(String username) {
+    private void setCookie(String username, Context context) {
         Preconditions.checkNotNull(username, "Username is required for setCookie");
+        Preconditions.checkNotNull(context, "Context is required for setCookie");
         
-        Cookie.builder(ninjaProperties.getWithDefault(Key.AUTH_COOKIE_NAME.getValue(), Key.DEFAULT_AUTH_COOKIE_NAME.getValue()), getSignature(username))
+        long timestamp = new Date().getTime();
+        StringBuilder buffer = new StringBuilder();
+        buffer.append(getSignature(username, timestamp));
+        buffer.append(SEPARATOR);
+        buffer.append(username);
+        buffer.append(SEPARATOR);
+        buffer.append(timestamp);
+        
+        Cookie.builder(getCookieName(), buffer.toString())
             .setSecure(true)
             .setHttpOnly(true)
+            .setMaxAge(ninjaProperties.getIntegerWithDefault(Key.AUTH_COOKIE_EXPIRES.get(), TWO_WEEKS_SECONDS))
             .build();
+        
+        //TODO Add cookie to context!
     }
     
     /**
@@ -164,10 +179,11 @@ public class Authentications {
      * 
      * @return The signature
      */
-    private String getSignature(String username) {
+    private String getSignature(String username, long timestamp) {
         Preconditions.checkNotNull(username, "Username is required for getSignature");
+        Preconditions.checkNotNull(username, "timestamp is required for getSignature");
         
-        return DigestUtils.sha512Hex(username + ninjaProperties.get(Key.APPLICATION_SECRET.getValue()));
+        return DigestUtils.sha512Hex(username + timestamp + ninjaProperties.get(Key.APPLICATION_SECRET.get()));
     }
     
     /**
@@ -179,19 +195,23 @@ public class Authentications {
     private String getUsernameFromCookie(Context context) {
         Preconditions.checkNotNull(context, "Valid context is required for getUsernameFromCookie");
         
-        Cookie cookie = context.getCookie(ninjaProperties.getWithDefault(Key.AUTH_COOKIE_NAME.getValue(), Key.DEFAULT_AUTH_COOKIE_NAME.getValue()));
-        if (cookie != null && StringUtils.isNotBlank(cookie.getValue()) && cookie.getValue().indexOf("-") > 0) {
-            final String sign = cookie.getValue().substring(0, cookie.getValue().indexOf("-"));
-            final String username = cookie.getValue().substring(cookie.getValue().indexOf("-") + 1);
-
-            if (StringUtils.isNotBlank(sign) && StringUtils.isNotBlank(username) && sign.equals(getSignature(username))) {
-                return username;
+        Cookie cookie = context.getCookie(getCookieName());
+        if (cookie != null && StringUtils.isNotBlank(cookie.getValue())) {
+            String [] cookieValue = cookie.getValue().split(SEPARATOR);
+            if (cookieValue.length == 3) {
+                String sign = cookieValue[0];
+                String username = cookieValue[1];
+                long timestamp = Long.valueOf(cookieValue[2]);
+                
+                if (getSignature(username, timestamp).equals(sign) && ((timestamp + TWO_WEEKS_MILLISECONDS) > new Date().getTime())) {
+                    return username;
+                }
             }
         }
         
         return null;
     }
-    
+
     /**
      * Checks if a username is present in the current context in a session
      * 
@@ -201,6 +221,6 @@ public class Authentications {
     private String getUsernameFromSession(Context context) {
         Preconditions.checkNotNull(context, "Valid context is required for getUsernameFromSession");
 
-        return context.getSession().get(Key.AUTHENTICATED_USER.getValue());
+        return context.getSession().get(Key.AUTHENTICATED_USER.get());
     }
 }
