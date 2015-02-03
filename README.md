@@ -15,6 +15,7 @@ Requirements
 ------------------
 
 Requires [Java SDK 1.8+][1]
+
 Requires [Ninja framework 4.0.5+][4]
 
 Usage
