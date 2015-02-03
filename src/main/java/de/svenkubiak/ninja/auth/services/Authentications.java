@@ -182,7 +182,7 @@ public class Authentications {
      */
     private String getSignature(String username, long timestamp) {
         Preconditions.checkNotNull(username, "Username is required for getSignature");
-        Preconditions.checkNotNull(username, "timestamp is required for getSignature");
+        Preconditions.checkNotNull(timestamp, "Timestamp is required for getSignature");
         
         return DigestUtils.sha512Hex(username + timestamp + ninjaProperties.get(Key.APPLICATION_SECRET.get()));
     }
