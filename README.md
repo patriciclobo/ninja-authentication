@@ -15,6 +15,7 @@ Requirements
 ------------------
 
 Requires [Java SDK 1.8+][1]
+Requires [Ninja framework 4.0.5+][4]
 
 Usage
 -----
@@ -65,3 +66,4 @@ If you want to check if a user is logged in your template, you can use the follo
 [1]: http://www.oracle.com/technetwork/java/javase/downloads/index.html
 [2]: http://de.wikipedia.org/wiki/Bcrypt
 [3]: http://www.mindrot.org/projects/jBCrypt/
+[4]: http://www.ninjaframework.org/
