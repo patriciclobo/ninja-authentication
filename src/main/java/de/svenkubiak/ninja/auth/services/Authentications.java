@@ -27,6 +27,7 @@ import de.svenkubiak.ninja.auth.enums.Key;
 public class Authentications {
     private static final Logger LOG = LoggerFactory.getLogger(Authentications.class); 
     private static final String SEPARATOR = "##";
+    private static final int COOKIE_VARS = 3;
     private static final int TWO_WEEKS_SECONDS = 1209600;
     private static final int TWO_WEEKS_MILLISECONDS = 1209600000;
     private static final int LOG_ROUNDS = 12;
@@ -156,11 +157,11 @@ public class Authentications {
         
         long timestamp = new Date().getTime();
         StringBuilder buffer = new StringBuilder();
-        buffer.append(getSignature(username, timestamp));
-        buffer.append(SEPARATOR);
-        buffer.append(username);
-        buffer.append(SEPARATOR);
-        buffer.append(timestamp);
+        buffer.append(getSignature(username, timestamp))
+            .append(SEPARATOR)
+            .append(username)
+            .append(SEPARATOR)
+            .append(timestamp);
         
         Cookie.builder(getCookieName(), buffer.toString())
             .setSecure(true)
@@ -198,10 +199,10 @@ public class Authentications {
         Cookie cookie = context.getCookie(getCookieName());
         if (cookie != null && StringUtils.isNotBlank(cookie.getValue())) {
             String [] cookieValue = cookie.getValue().split(SEPARATOR);
-            if (cookieValue.length == 3) {
+            if (cookieValue.length == COOKIE_VARS) {
                 String sign = cookieValue[0];
                 String username = cookieValue[1];
-                long timestamp = Long.valueOf(cookieValue[2]);
+                long timestamp = Long.parseLong(cookieValue[2]);
                 
                 if (getSignature(username, timestamp).equals(sign) && ((timestamp + TWO_WEEKS_MILLISECONDS) > new Date().getTime())) {
                     return username;
