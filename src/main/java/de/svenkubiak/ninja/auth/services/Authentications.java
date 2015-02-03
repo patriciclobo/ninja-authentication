@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Preconditions;
 import com.google.inject.Inject;
+import com.google.inject.Singleton;
 
 import de.svenkubiak.ninja.auth.enums.Key;
 
@@ -20,6 +21,7 @@ import de.svenkubiak.ninja.auth.enums.Key;
  * @author svenkubiak
  *
  */
+@Singleton
 public class Authentications {
     private static final Logger LOG = LoggerFactory.getLogger(Authentications.class); 
     private static final int LOG_ROUNDS = 12;

@@ -19,7 +19,7 @@ Requires [Java SDK 1.8+][1]
 Usage
 -----
 
-**Please note: This module does not do the actual authentication (checking username and password against store values). You have to store these values yourself and pass them to the provided methods. It also does not provide any templates for login, registration, etc. It just makes handling authentications in the Ninja web framework a little easier.**
+**Please note: This module does not store user credentials, you have to store these values yourself and pass them to the provided methods. It also does not provide any templates for login, registration, etc. It just makes handling authentications in the Ninja web framework a little easier.**
 
 This module uses [BCrypt][2] provided by [jBCrypt][3] for password hashing, which means, that you don't have to store a salt along with the user. Just the hashed password. This also means, that you have to hash the user password with the following provided message and store this hash value with the user.
 
@@ -33,7 +33,7 @@ The AuthenticationFilter is responsible for checking if a user is logged in. It 
 
 	auth.redirect.url=/my/login/url
 	
-If this property is not configured, the filter will return a 403 forbidden.
+If this property is not configured, the filter will return a 401 unauthorized.
 
 To use the AuthenticationFilter to protect authentication required pages, you have to annotate your controller or method with the following annotation:
 
@@ -53,6 +53,14 @@ Check the JavaDoc for a detailed explanation of the methods.
 You can set the name for the authentication cookie with the following option in your application.conf
 
 	auth.cookie.name=mycookiename
+	
+*Checking Authentication*
+
+If you want to check if a user is logged in your template, you can use the following check
+
+	<#if (session.authenticateduser)??>
+	...
+	</#if> 
 
 [1]: http://www.oracle.com/technetwork/java/javase/downloads/index.html
 [2]: http://de.wikipedia.org/wiki/Bcrypt

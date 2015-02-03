@@ -35,13 +35,9 @@ public class AuthenticationFilter implements Filter {
     public Result filter(FilterChain filterChain, Context context) {
         if (StringUtils.isBlank(authentications.getAuthenticatedUser(context))) {
             String redirect = ninjaProperties.get(Key.AUTH_REDIRECT_URL.getValue());
-            return (StringUtils.isBlank(redirect)) ? forbidden(context) : Results.redirect(redirect);
+            return (StringUtils.isBlank(redirect)) ? ninjaDefault.getUnauthorizedResult(context) : Results.redirect(redirect);
         }
         
         return filterChain.next(context);
-    }
-    
-    private Result forbidden(Context context) {
-        return ninjaDefault.getForbiddenResult(context);
     }
 }

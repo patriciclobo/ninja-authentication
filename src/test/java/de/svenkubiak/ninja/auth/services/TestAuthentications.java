@@ -68,5 +68,11 @@ public class TestAuthentications extends NinjaTest {
         assertEquals(USERNAME, authentications.getAuthenticatedUser(context));
         authentications.logout(context);
         assertNull(USERNAME, authentications.getAuthenticatedUser(context));
+        
+        assertNull(USERNAME, authentications.getAuthenticatedUser(context));
+        authentications.login(context, USERNAME, true);
+        assertEquals(USERNAME, authentications.getAuthenticatedUser(context));
+        authentications.logout(context);
+        assertNull(USERNAME, authentications.getAuthenticatedUser(context));
     }
 }
