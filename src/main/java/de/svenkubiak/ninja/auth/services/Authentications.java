@@ -8,7 +8,7 @@ import ninja.utils.NinjaProperties;
 
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.mindrot.jbcrypt.BCrypt;
+import org.mindrot.BCrypt;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,7 +26,10 @@ import de.svenkubiak.ninja.auth.enums.Key;
 @Singleton
 public class Authentications {
     private static final Logger LOG = LoggerFactory.getLogger(Authentications.class); 
-    private static final String SEPARATOR = "##";
+    private static final String SEPARATOR = "####";
+    private static final int INDEX_0 = 0;
+    private static final int INDEX_1 = 1;
+    private static final int INDEX_2 = 2;
     private static final int COOKIE_VARS = 3;
     private static final int TWO_WEEKS_SECONDS = 1209600;
     private static final int TWO_WEEKS_MILLISECONDS = 1209600000;
@@ -65,7 +68,7 @@ public class Authentications {
     /**
      * Generates a hash value for a given password using BCrypt
      * 
-     * @param password The password to hash
+     * @param password The cleartext password to hash
      * 
      * @return The hashed value 
      */
@@ -98,16 +101,17 @@ public class Authentications {
     }
     
     /**
-     * Performs a logout in the current context, remove the user session and cookie
+     * Performs a logout in the current context by removing the user from the 
+     * session and from the cookie if present
      * 
      * @param context The current context
      */
     public void logout(Context context) {
         Preconditions.checkNotNull(context, "Valid context is required for logout");
         
-        //TODO use new unset cookie function context.unsetCookie(coookie)
         if (context.hasCookie(getCookieName())) {
-            Cookie.builder(context.getCookie(getCookieName())).setMaxAge(0); 
+            //TODO use new unset cookie function context.unsetCookie(coookie)
+            //context.unsetCookie(Cookie.builder(context.getCookie(getCookieName())));
         }
         
         context.getSession().clear();
@@ -163,13 +167,14 @@ public class Authentications {
             .append(SEPARATOR)
             .append(timestamp);
         
-        Cookie.builder(getCookieName(), buffer.toString())
+        Cookie cookie = Cookie.builder(getCookieName(), buffer.toString())
             .setSecure(true)
             .setHttpOnly(true)
             .setMaxAge(ninjaProperties.getIntegerWithDefault(Key.AUTH_COOKIE_EXPIRES.get(), TWO_WEEKS_SECONDS))
             .build();
         
-        //TODO Add cookie to context!
+        //TODO Use new context.addCookie(cookie) function
+        //context.addCookie(cookie);
     }
     
     /**
@@ -200,9 +205,9 @@ public class Authentications {
         if (cookie != null && StringUtils.isNotBlank(cookie.getValue())) {
             String [] cookieValue = cookie.getValue().split(SEPARATOR);
             if (cookieValue.length == COOKIE_VARS) {
-                String sign = cookieValue[0];
-                String username = cookieValue[1];
-                long timestamp = Long.parseLong(cookieValue[2]);
+                String sign = cookieValue[INDEX_0];
+                String username = cookieValue[INDEX_1];
+                long timestamp = Long.parseLong(cookieValue[INDEX_2]);
                 
                 if (getSignature(username, timestamp).equals(sign) && ((timestamp + TWO_WEEKS_MILLISECONDS) > new Date().getTime())) {
                     return username;
