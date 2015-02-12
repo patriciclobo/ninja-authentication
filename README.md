@@ -1,6 +1,7 @@
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/de.svenkubiak/ninja-authentication-module/badge.svg)](https://maven-badges.herokuapp.com/maven-central/de.svenkubiak/ninja-authentication-module)
 [![Build Status](https://secure.travis-ci.org/svenkubiak/ninja-authentication.png?branch=master)](http://travis-ci.org/svenkubiak/ninja-authentication)
 [![Coverity Scan Build Status](https://scan.coverity.com/projects/4076/badge.svg)](https://scan.coverity.com/projects/4076)
+[![Dependency Status](https://www.versioneye.com/user/projects/54dcba1fc1bbbd5f820004bb/badge.svg?style=flat)](https://www.versioneye.com/user/projects/54dcba1fc1bbbd5f820004bb)
 
 If this software is useful to you, you can support further development by using Flattr. Thank you!
 
