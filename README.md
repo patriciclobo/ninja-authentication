@@ -15,7 +15,7 @@ Requirements
 ------------
 
 - [Java SDK 1.8+][1]
-- [Ninja web framework 4.0.5+][4]
+- [Ninja web framework 4.0.6+][4]
 
 Configuration
 -------------

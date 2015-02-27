@@ -110,8 +110,7 @@ public class Authentications {
         Preconditions.checkNotNull(context, "Valid context is required for logout");
         
         if (context.hasCookie(getCookieName())) {
-            //TODO use new unset cookie function context.unsetCookie(coookie)
-            //context.unsetCookie(Cookie.builder(context.getCookie(getCookieName())));
+            context.unsetCookie(Cookie.builder(context.getCookie(getCookieName())).build());
         }
         
         context.getSession().clear();
@@ -173,8 +172,7 @@ public class Authentications {
             .setMaxAge(ninjaProperties.getIntegerWithDefault(Key.AUTH_COOKIE_EXPIRES.get(), TWO_WEEKS_SECONDS))
             .build();
         
-        //TODO Use new context.addCookie(cookie) function
-        //context.addCookie(cookie);
+        context.addCookie(cookie);
     }
     
     /**
