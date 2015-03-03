@@ -113,7 +113,7 @@ public class Authentications {
             context.unsetCookie(Cookie.builder(context.getCookie(getCookieName())).build());
         }
         
-        context.getSession().clear();
+        context.getSession().remove(Key.AUTHENTICATED_USER.get());
     }
     
     /**
