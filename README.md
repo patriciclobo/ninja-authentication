@@ -31,7 +31,7 @@ The time in seconds how long the user stays logged in.
 
 Default: Two weeks
 
-	auth.login.redirect=/myloginpage
+	auth.redirect.url=/myloginpage
 
 The url the user will be redirected. If this is not configured, the module will return the default 401 unauthorized ninja template.
 
